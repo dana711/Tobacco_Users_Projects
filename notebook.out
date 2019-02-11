@@ -1,0 +1,12 @@
+[I 12:08:36.384 NotebookApp] JupyterLab extension loaded from /Users/dk/anaconda3/lib/python3.7/site-packages/jupyterlab
+[I 12:08:36.384 NotebookApp] JupyterLab application directory is /Users/dk/anaconda3/share/jupyter/lab
+[I 12:08:36.387 NotebookApp] Serving notebooks from local directory: /Users/dk/my_repos/Tobacco_Users_Projects
+[I 12:08:36.387 NotebookApp] The Jupyter Notebook is running at:
+[I 12:08:36.387 NotebookApp] http://localhost:8888/?token=259026a1972c429f3c0a87a295cb25b965749cd5221f2f04
+[I 12:08:36.388 NotebookApp] Use Control-C to stop this server and shut down all kernels (twice to skip confirmation).
+[C 12:08:36.391 NotebookApp] 
+    
+    Copy/paste this URL into your browser when you connect for the first time,
+    to login with a token:
+        http://localhost:8888/?token=259026a1972c429f3c0a87a295cb25b965749cd5221f2f04
+[I 12:08:36.553 NotebookApp] Accepting one-time-token-authenticated connection from ::1
