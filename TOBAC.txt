@@ -1,0 +1,112 @@
+* FIND ACTIVE PPTS WHO REPORTED TO BE SMOKERS                           00010000
+#QUERY                                                                  00020000
+#SUBJECT- FIND ACTIVE PPTS WHO REPORTED TO BE SMOKERS                   00030000
+*#SAVEDATA-TABLE_NAME                                                   00040000
+*#INDEX-PRSN_INTN_ID                                                    00050000
+                                                                        00060000
+SELECT A.PRSN_INTN_ID                                                   00070000
+     , B.EMPL_STAT_CD          AS BENEFIT_PROGRAM                       00080000
+     , C.EMPL_STAT_CD          AS EMPL_STATUS                           00090000
+     , D.EMPL_STAT_CD          AS EMPL_CLASS                            00100000
+     , Z.ORG_CD                AS UNION_CODE                            00110007
+     , A.PLAN_ID               AS SUPP_LIFE_PLAN                        00120000
+     , E.OPT_LDSC_TX           AS SUPP_LIFE_OPTION                      00130000
+     , A.PRSN_OPT_EFBEGDT      AS SUPP_LIFE_BEGIN                       00140000
+     , A.OPT_PLAN_RSPN_CD      AS TOBACCO_USER                          00150000
+     , F.BRTH_DT               AS BRTH_DT                               00160009
+     , F.SEX_CD                AS GENDER                                00170008
+     , W.RLTN_CD               AS SPOUSE                                00180008
+     , COUNT(X.RLTN_CD)        AS NUM_CHILD                             00190008
+     , V.CDH_DATA_ROW_TX       AS LOCATION                              00191010
+     , U.EMPL_STAT_CD          AS WRK_STATE                             00191110
+     , G.PYRT_AT               AS ANNUAL_PAY                            00192011
+                                                                        00193011
+  FROM &DATABASE..PRSN_OPT_PLAN     A                                   00200000
+     , &DATABASE..OPT               E                                   00210004
+     , &DATABASE..PRSN              F                                   00220008
+     , &DATABASE..EE_PYRT           G                                   00230011
+     , &DATABASE..EE_EMPL_CAT       B                                   00250000
+     , &DATABASE..EE_EMPL_CAT       C                                   00260000
+     , &DATABASE..EE_EMPL_CAT       D                                   00270002
+                                                                        00280000
+                                                                        00290000
+LEFT JOIN &DATABASE..EE_ORG        Z                                    00300000
+    ON  Z.ORG_CAT_ID               = 101                                00310000
+    AND Z.EE_ORG_EFENDDT           = '2299-12-31'                       00320000
+    AND Z.PRSN_INTN_ID             = D.PRSN_INTN_ID                     00330000
+                                                                        00340000
+LEFT JOIN &DATABASE..CAT_DFN       Y                                    00350001
+    ON  Y.EFENDDT                  = '2299-12-31'                       00360000
+    AND Y.CAT_ID                   = Z.ORG_CAT_ID                       00370000
+                                                                        00380000
+*CHECK IF THEY HAVE A SPOUSE ON FILE                                    00380108
+LEFT JOIN &DATABASE..PRSN_RLTN     W                                    00381008
+    ON  W.RLTN_CD                 IN ('S','DP')                         00382008
+    AND W.PRSN_RLTN_EFENDDT        = '2299-12-31'                       00383008
+    AND W.PRIM_PRSN_INTN_ID        = D.PRSN_INTN_ID                     00384008
+                                                                        00385008
+*CHECK IF THEY HAVE CHILDREN ON FILE                                    00386008
+LEFT JOIN &DATABASE..PRSN_RLTN     X                                    00387008
+    ON  X.RLTN_CD                 IN ('C','CD')                         00388008
+    AND X.PRSN_RLTN_EFENDDT        = '2299-12-31'                       00389008
+    AND X.PRIM_PRSN_INTN_ID        = D.PRSN_INTN_ID                     00389108
+                                                                        00389208
+*REPORT LOCATION                                                        00389310
+LEFT JOIN &DATABASE..PRSN_CDH         V                                 00389410
+     ON V.PRSN_INTN_ID             = D.PRSN_INTN_ID                     00389610
+    AND V.CDD_FLD_SET_DFN_ID       = 20                                 00389710
+    AND V.CDD_FLD_INTN_ID          = 'GRC-HR-PPT-CDH-F16'               00389810
+    AND V.PRSN_CDH_EFENDDT         = '2299-12-31'                       00390010
+                                                                        00390110
+*REPORT WORK LOCATION                                                   00390210
+LEFT JOIN &DATABASE..EE_EMPL_CAT   U                                    00390310
+     ON U.PRSN_INTN_ID             = D.PRSN_INTN_ID                     00390410
+    AND U.EMPL_CAT_ID              = 4325                               00390510
+    AND U.EE_EMPLCAT_EFENDDT       = '2299-12-31'                       00390710
+                                                                        00390810
+                                                                        00391010
+ WHERE A.PRSN_INTN_ID               = B.PRSN_INTN_ID                    00400000
+   AND A.PRSN_INTN_ID               = C.PRSN_INTN_ID                    00410000
+   AND A.PRSN_INTN_ID               = D.PRSN_INTN_ID                    00420000
+   AND A.PRSN_INTN_ID               = F.PRSN_INTN_ID                    00430008
+   AND A.PRSN_INTN_ID               = G.PRSN_INTN_ID                    00440011
+   AND A.OPT_ID                     = E.OPT_ID                          00460008
+                                                                        00470008
+*  AND A.PLAN_ID                  IN (8954,5300)                        00480008
+   AND A.PLAN_ID                    = 8954                              00490008
+   AND A.PRSN_OPT_EFBEGDT           = '2019-01-01'                      00500008
+                                                                        00510008
+*BENEFIT PROGRAM                                                        00540008
+   AND B.EMPL_CAT_ID         = 4320                                     00550008
+   AND B.EE_EMPLCAT_EFENDDT  = '2299-12-31'                             00560008
+                                                                        00570008
+*EMPLOYMENT STATUS                                                      00580008
+   AND C.EMPL_CAT_ID         = 1                                        00590008
+   AND C.EE_EMPLCAT_EFENDDT  = '2299-12-31'                             00600008
+                                                                        00610008
+*EMPLOYEE CLASS                                                         00620008
+   AND D.EMPL_CAT_ID         = 4520                                     00630008
+   AND D.EE_EMPLCAT_EFENDDT  = '2299-12-31'                             00640008
+                                                                        00650008
+   AND E.EFENDDT             = '2299-12-31'                             00660008
+                                                                        00670008
+   AND G.PAY_CAT_ID          = 211                                      00670111
+   AND G.EE_PYRT_EFENDDT     = '2299-12-31'                             00670211
+                                                                        00670311
+GROUP BY   A.PRSN_INTN_ID                                               00671008
+         , B.EMPL_STAT_CD                                               00671109
+         , C.EMPL_STAT_CD                                               00671209
+         , D.EMPL_STAT_CD                                               00671309
+         , Z.ORG_CD                                                     00671409
+         , A.PLAN_ID                                                    00671509
+         , E.OPT_LDSC_TX                                                00671609
+         , A.PRSN_OPT_EFBEGDT                                           00671709
+         , A.OPT_PLAN_RSPN_CD                                           00671809
+         , F.BRTH_DT                                                    00671909
+         , F.SEX_CD                                                     00672009
+         , W.RLTN_CD                                                    00672109
+         , V.CDH_DATA_ROW_TX                                            00679110
+         , U.EMPL_STAT_CD                                               00679210
+         , G.PYRT_AT                                                    00679311
+                                                                        00679411
+WITH UR                                                                 00680008
